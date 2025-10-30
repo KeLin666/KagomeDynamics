@@ -3,9 +3,9 @@ import matplotlib.pyplot as plt
 
 def calculate_kagome_potential(x, y, k, V532, V1064, phi12, phi23, plot = 0):
     term1 = V532 * (2/3 - 2/9 * (
-        np.cos(k * (-np.sqrt(3) * x + 3 * y)) +
-        np.cos(k * (np.sqrt(3) * x + 3 * y)) +
-        np.cos(2 * k * np.sqrt(3) * x)
+        np.cos(k * (-np.sqrt(3) * x + 3 * y) + 2 * phi12) +
+        np.cos(k * (np.sqrt(3) * x + 3 * y) + 2 * phi23) +
+        np.cos(2 * k * np.sqrt(3) * x - 2* (phi12 - phi23))
     ))
 
     term2 = V1064 * (2/3 - 2/9 * (

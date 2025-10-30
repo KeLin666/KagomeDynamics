@@ -1,15 +1,22 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def calculate_band_structure(V532, V1064, phi12, phi23, k_path, k_labels,num_interpolation=40, num_bands=10, G_cutoff=3, plot=0):
-    # a = 3 / 2
-    # k = 2 * np.pi / a
+def calculate_band_structure(V532, V1064, phi12, phi23, k_path, k_labels, num_interpolation=40, num_bands=10, G_cutoff=3, plot=0):
+    lambda0=3/2
+    k = 2 * np.pi / lambda0
     # t = a / (3 / 2)
-    k = 4 * np.pi / 3.0
-    
-    b1 = np.array([2 * np.pi / np.sqrt(3), 2 * np.pi])
-    b2 = np.array([2 * np.pi / np.sqrt(3), -2 * np.pi])
-
+    # k = 4 * np.pi / 3 # * 3000
+    # if a =1 then k = 2pi/lambda = 2pi / 1.5, lambda=1.5a; 
+    # if lambda =1 then a = 2/3, 1/a = 3/2
+    # if lambda =1064e-9 then a = 2/3 lambda =2/3*1064e-9, 
+    # h = 6.626e-34
+    # hbar = 6.626e-34 / 2/np.pi
+    # mrb = 1.4192261e-25
+    # cst = hbar**2/2/mrb
+    # k = 2 * np.pi / 1064e-9
+    b1 = np.array([2 * np.pi / np.sqrt(3), 2 * np.pi]) #* 1.5 / 1064e-9
+    b2 = np.array([2 * np.pi / np.sqrt(3), -2 * np.pi])  #* 1.5 / 1064e-9
+    # amp of b 1/a
     g_vectors = []
     g_indices = []
     for m in range(-G_cutoff, G_cutoff + 1):
@@ -28,13 +35,13 @@ def calculate_band_structure(V532, V1064, phi12, phi23, k_path, k_labels,num_int
     # V_G = 0.5 * exp(i*phi) for G=K
     # V_G = 0.5 * exp(-i*phi) for G=-K
     
-    K1_532 = k * np.array([-np.sqrt(3), 3])
-    K2_532 = k * np.array([np.sqrt(3), 3])
-    K3_532 = k * np.array([2 * np.sqrt(3), 0])
+    K1_532 = k * np.array([-np.sqrt(3), 3]) #/ (np.sqrt(3))
+    K2_532 = k * np.array([np.sqrt(3), 3]) #/ (np.sqrt(3))
+    K3_532 = k * np.array([2 * np.sqrt(3), 0]) #/ (np.sqrt(3))
 
-    K1_1064 = k * np.array([-np.sqrt(3)/2, 3/2])
-    K2_1064 = k * np.array([np.sqrt(3)/2, 3/2])
-    K3_1064 = k * np.array([np.sqrt(3), 0])
+    K1_1064 = k * np.array([-np.sqrt(3)/2, 3/2]) # (np.sqrt(3))
+    K2_1064 = k * np.array([np.sqrt(3)/2, 3/2]) #/ (np.sqrt(3))
+    K3_1064 = k * np.array([np.sqrt(3), 0]) #/ (np.sqrt(3))
     
     # Matrix of Hamiltonian H(k)_G,G' = (k+G)^2 * δ_GG' + V_{G-G'}
     # Unit of Kinetic Energy hbar^2 / (2m),
@@ -90,6 +97,7 @@ def calculate_band_structure(V532, V1064, phi12, phi23, k_path, k_labels,num_int
                 H[i, j] += V_G_diff
 
         # eigenvalue and eigen vector
+        # print(H.shape)
         eigenvalues, eigenvectors = np.linalg.eigh(H)
         # eigenvalues = np.linalg.eigvalsh(H)
         bands.append(eigenvalues[:num_bands])
@@ -107,8 +115,8 @@ def calculate_band_structure(V532, V1064, phi12, phi23, k_path, k_labels,num_int
         #     plt.plot(k_axis, bands[i], '-')
 
         plt.title("Band Structure of Kagome Lattice")
-        plt.ylabel("Energy (units of $\hbar^2/2m$)")
-        
+        # plt.ylabel("Energy (units of $\hbar^2/2m$)")
+        plt.ylabel("Energy (units of $/h (Hz)$)")
         # K point
         k_node_positions = [0]
         node_dist = 0
