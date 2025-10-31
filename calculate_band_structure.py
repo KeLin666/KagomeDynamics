@@ -2,20 +2,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def calculate_band_structure(V532, V1064, phi12, phi23, k_path, k_labels, num_interpolation=40, num_bands=10, G_cutoff=3, plot=0):
-    lambda0=3/2
-    k = 2 * np.pi / lambda0
+    # lambda0=3/2
+    # k = 2 * np.pi / lambda0
     # t = a / (3 / 2)
     # k = 4 * np.pi / 3 # * 3000
     # if a =1 then k = 2pi/lambda = 2pi / 1.5, lambda=1.5a; 
     # if lambda =1 then a = 2/3, 1/a = 3/2
     # if lambda =1064e-9 then a = 2/3 lambda =2/3*1064e-9, 
-    # h = 6.626e-34
-    # hbar = 6.626e-34 / 2/np.pi
-    # mrb = 1.4192261e-25
-    # cst = hbar**2/2/mrb
-    # k = 2 * np.pi / 1064e-9
-    b1 = np.array([2 * np.pi / np.sqrt(3), 2 * np.pi]) #* 1.5 / 1064e-9
-    b2 = np.array([2 * np.pi / np.sqrt(3), -2 * np.pi])  #* 1.5 / 1064e-9
+    h = 6.626e-34
+    hbar = 6.626e-34 / 2/np.pi
+    mrb = 1.4192261e-25
+    cst = hbar**2/2/mrb
+    k = 2 * np.pi / 1064e-9
+    b1 = np.array([2 * np.pi / np.sqrt(3), 2 * np.pi]) * 1.5 / 1064e-9
+    b2 = np.array([2 * np.pi / np.sqrt(3), -2 * np.pi])  * 1.5 / 1064e-9
     # amp of b 1/a
     g_vectors = []
     g_indices = []
@@ -39,7 +39,7 @@ def calculate_band_structure(V532, V1064, phi12, phi23, k_path, k_labels, num_in
     K2_532 = k * np.array([np.sqrt(3), 3]) #/ (np.sqrt(3))
     K3_532 = k * np.array([2 * np.sqrt(3), 0]) #/ (np.sqrt(3))
 
-    K1_1064 = k * np.array([-np.sqrt(3)/2, 3/2]) # (np.sqrt(3))
+    K1_1064 = k * np.array([-np.sqrt(3)/2, 3/2]) #/ (np.sqrt(3))
     K2_1064 = k * np.array([np.sqrt(3)/2, 3/2]) #/ (np.sqrt(3))
     K3_1064 = k * np.array([np.sqrt(3), 0]) #/ (np.sqrt(3))
     
@@ -76,7 +76,7 @@ def calculate_band_structure(V532, V1064, phi12, phi23, k_path, k_labels, num_in
                     V_G_diff += -V532 * (2/9) * 0.5
                 if np.allclose(G_diff, K3_532) or np.allclose(G_diff, -K3_532):
                     V_G_diff += -V532 * (2/9) * 0.5
-                    
+ 
                 # Potential from 1064 beam
                 # be careful about phase
                 if np.allclose(G_diff, K1_1064):
@@ -133,7 +133,7 @@ def calculate_band_structure(V532, V1064, phi12, phi23, k_path, k_labels, num_in
             distances[i] = distances[i-1] + np.linalg.norm(k_points[i] - k_points[i-1])
 
         for i in range(num_bands):
-            plt.plot(distances, bands[i], '-')
+            plt.plot(distances, (bands[i]-np.min(np.min(bands)))*cst/h, '-')
             # plt.plot(bands[i],'-')
         plt.xticks(k_node_positions, [f'${label}$' for label in k_labels])
         for pos in k_node_positions:
