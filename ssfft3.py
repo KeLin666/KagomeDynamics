@@ -64,16 +64,16 @@ V1064 = 10000 *h/cst
 phi12 = 0
 phi23 = 0
 
-if False:
+if True:
     P_0 = np.array([0, 0])
-    P_1 = np.array([0.2, -0.2])
-    P_2 = np.array([0.2, 0.2])
-    P_3 = np.array([-0.2, 0.2])
-    P_4 = np.array([-0.2, -0.2])
+    P_1 = np.array([0.1, -0.1]) * 1.5 / 1064e-9
+    P_2 = np.array([0.1, 0.1]) * 1.5 / 1064e-9
+    P_3 = np.array([-0.1, 0.1]) * 1.5 / 1064e-9
+    P_4 = np.array([-0.1, -0.1]) * 1.5 / 1064e-9
     k_path = [P_0, P_1, P_2, P_3, P_4, P_1]
     k_labels = ["P_0", "P_1", "P_2", "P_3", "P_4", "P_1"]
 
-if True:
+if False:
     Gamma = np.array([0, 0])
     K = np.array([2*np.pi/np.sqrt(3), 2*np.pi/3]) * 1.5 / 1064e-9
     M = np.array([2*np.pi/np.sqrt(3), 0]) * 1.5 / 1064e-9
@@ -168,7 +168,7 @@ for band_index in range(3):
 # Open a writer for the GIF file
 gif_path = f"video{num_run}.gif"
 
-dt = 1e-4#e-16
+dt = 1e-5#e-16
 tmax = 100*dt
 NUM = int(tmax / dt) + 1
 
@@ -178,6 +178,7 @@ potential_2D = V
 # Intial Wavefunction
 
 if False:
+
     u = eigenstate_wavefunction = calulate_eigenstate(
         evectors,
         k_points,
@@ -189,13 +190,14 @@ if False:
         ymax = ymax)
 
     u /= np.sqrt(np.sum(np.sum(np.conj(u) * u))*dx*dy) 
-    
+
     # print(np.sum(np.sum(np.conj(u)*u))*dx*dy) # normalization check, should add up equal to 1
 
 
 if True:
+
     X, Y = np.meshgrid(x, y)
-    w0 = 0.1*xmax  # Beam waist radius (controls the spot size). Adjust this value as needed.
+    w0 = 0.2*xmax  # Beam waist radius (controls the spot size). Adjust this value as needed.
     u = 1 / np.sqrt(np.pi * w0**2)* np.exp(-(((X)**2 + Y**2) / 2 / w0**2))#.astype(np.complex128)
 
     # print(np.sum(np.sum(np.conj(u)*u))*dx*dy) # normalization check, should add up equal to 1
@@ -227,7 +229,7 @@ LINEAR_FACTOR = np.exp(1j * FACTOR * (FY_sq + FX_sq))
 
 if True:
     i = np.arange(0, NUM)
-    freqs = np.linspace(0.1, 0.1, 1)   # 带宽从 0.02 到 0.04
+    freqs = np.linspace(0.25, 0.25, 1)   # 带宽从 0.02 到 0.04
     amps = np.random.uniform(0.2, 1.0, len(freqs))
     signal = np.sum([A * np.sin(f * i) for A, f in zip(amps, freqs)], axis=0)
     # signal = np.fft.fft(signal)

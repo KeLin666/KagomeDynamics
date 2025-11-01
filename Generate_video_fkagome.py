@@ -13,27 +13,33 @@ num_frames = fps * duration
 # Define the codec and create VideoWriter object
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # for .mp4
 out = cv2.VideoWriter('output.mp4', fourcc, fps, (width, height))
-
+h = 6.626e-34
+hbar = h / 2/np.pi
+mrb = 1.4192261e-25
+cst = hbar**2/2/mrb
 N = 1024
 Nx, Ny = N, N
-xmax, ymax =  6*np.sqrt(3), 6
+xmax, ymax =  4*np.sqrt(3)*1e-6, 4e-6
 dx = (2 * xmax) / (N - 1)
 dy = (2 * ymax) / (N - 1)
 x = np.linspace(-xmax, xmax, N)
 y = np.linspace(-ymax, ymax, N)
-
-dt = 0.01#e-16
+lambda532 = 532e-9
+lambda1064 = 1064e-9
+k532 = 2 * np.pi / lambda532
+k1064 = 2 * np.pi / lambda1064
+dt = 1e-2#e-16
 tmax = num_frames*dt
 NUM = int(tmax / dt) + 1
-
+V532 = 10000 *h/cst
+V1064 = 10000 *h/cst
 X, Y = np.meshgrid(x, y)
 
 i = np.arange(0, NUM)
-freqs = np.linspace(0.2, 0.2, 1)   # 带宽从 0.02 到 0.04
-amps = np.random.uniform(0.2, 1.0, len(freqs))
-signal = np.sum([A * np.sin(f * i) for A, f in zip(amps, freqs)], axis=0)
-# signal = np.fft.fft(signal)
-signal /= np.max(signal)/np.pi*10
+freqs = np.linspace(0.25, 0.25, 1)   # 带宽从 0.02 到 0.04
+signal = np.sum([np.sin(f * i) for f in zip( freqs)], axis=0)
+
+signal /= np.max(signal)/np.pi*2
 plt.plot(signal)
 
 
@@ -44,15 +50,15 @@ out = cv2.VideoWriter('kagome_potential.mp4', fourcc, fps, (width, height))
 # --- Generate frames ---
 for i in range(num_frames):
     potential_2D = calculate_kagome_potential(
-        X,
-        Y,
-        4 * np.pi / 3.0,
-        1,
-        1,
-        -np.pi * np.sin(signal[i]),
-        np.pi * np.sin(signal[i]),
-        plot=0
-    )
+                X, 
+                Y, 
+                k1064, 
+                V532, 
+                V1064, #+ 0.8 * np.sin(signal[i]), 
+                - 0.2* np.pi * np.sin(signal[i]), 
+                0.2*np.pi * np.sin(signal[i]), 
+                plot=0
+                )
 
     # Create matplotlib figure
     fig, ax = plt.subplots(figsize=(width / 100, height / 100), dpi=100)
@@ -61,7 +67,7 @@ for i in range(num_frames):
     cbar.set_label('Potential', fontweight='bold', fontsize=10)
     ax.set_xlabel("x")
     ax.set_ylabel("y")
-    ax.set_title(f"Frame {i}")
+    ax.set_title(f"Time {i*dt:.2f} ms")
 
     # Save figure to memory buffer
     buf = BytesIO()
